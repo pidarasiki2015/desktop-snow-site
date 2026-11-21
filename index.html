@@ -3,99 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desktop Snow — Новый год уже здесь</title>
-<meta name="description" content="Новогодний оверлей для Windows 10/11: снег ложится на грани окон и панель задач, снеговики, ёлки, Санта, поезд и йети. Один exe без установщика.">
+<title>Desktop Snow — Новый год уже здесь. Прямо на твоём рабочем столе</title>
+<meta name="description" content="Живой снег на каждом окне Windows 10/11, снеговики, ёлки, Санта и поезд. Нативный C++ + Direct2D, портативно, без установки. Скачай бесплатно.">
 <link rel="icon" href="favicon.ico">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <canvas id="snow" aria-hidden="true"></canvas>
+<div class="garland" aria-hidden="true"></div>
 
 <header class="nav">
-  <a class="brand" href="#top"><img src="favicon.ico" alt="" width="22" height="22">Desktop Snow</a>
+  <a class="brand" href="#top">
+    <svg class="flake" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 2v20M4 7l16 10M20 7L4 17M12 2l-2.5 3M12 2l2.5 3M12 22l-2.5-3M12 22l2.5-3M4 7l3.8.8M4 7l.8 3.8M20 17l-3.8-.8M20 17l-.8-3.8M20 7l-3.8.8M20 7l-.8 3.8M4 17l3.8-.8M4 17l.8-3.8" stroke="#FBBF24" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+    <span>Desktop&nbsp;Snow</span>
+  </a>
   <nav class="links">
-    <a href="#features">Возможности</a>
-    <a href="#how">Как поставить</a>
-    <a href="#tech">Под капотом</a>
-    <a class="btn btn-sm" href="https://github.com/4JIeHoroJIoBbIU/desktop-weather/releases" target="_blank" rel="noopener">Скачать</a>
+    <a href="#features" data-i18n="nav.features">Фишки</a>
+    <a href="#demo" data-i18n="nav.demo">Интерактив</a>
+    <a href="#how" data-i18n="nav.how">Как работает</a>
+    <div class="langs" role="group" aria-label="Language">
+      <button class="lang on" data-lang="ru">RU</button><button class="lang" data-lang="ua">UA</button><button class="lang" data-lang="en">EN</button>
+    </div>
+    <a class="btn btn-sm" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="nav.dl">Скачать</a>
   </nav>
 </header>
 
 <main id="top">
-  <section class="hero">
-    <p class="kicker">Оверлей для Windows 10 (2004+) и Windows 11</p>
-    <h1>Новый год<br><span>уже на твоём&nbsp;рабочем столе</span></h1>
-    <p class="lead">Снег идёт поверх всего экрана и <b>ложится на верхние грани окон и панель задач</b>.
-    Тащишь окно — сугроб едет вместе с ним. Дёрнул резко — снег слетает.
-    Выращивай ёлки, катай снежки, ставь снеговиков — и лови гостей.</p>
-    <div class="cta">
-      <a class="btn btn-lg" href="https://github.com/4JIeHoroJIoBbIU/desktop-weather/releases" target="_blank" rel="noopener">Скачать zip с Release</a>
-      <a class="btn btn-lg btn-ghost" href="#how">Как это запустить</a>
+  <!-- HERO + ИНТЕРАКТИВНОЕ ДЕМО -->
+  <section class="hero" id="demo">
+    <div class="hero-text">
+      <p class="kicker rv" data-i18n="hero.kicker">Windows 10 / 11 • Нативно • Без установки</p>
+      <h1 class="rv"><span data-i18n="hero.t1">Новый год уже здесь.</span><br><span class="grad" data-i18n="hero.t2">Прямо на твоём рабочем столе</span></h1>
+      <p class="lead rv" data-i18n="hero.sub">Живой снег на каждом окне, интерактивные снеговики, ёлки, Санта и поезд — для Windows 10 и 11. Работает на видеокарте, весит меньше мегабайта и не мешает в играх.</p>
+      <div class="cta rv">
+        <a class="btn btn-lg" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="hero.btn">Скачать бесплатно (Windows 10/11)</a>
+      </div>
+      <p class="note rv" data-i18n="hero.note">Портативная версия • Без установки • Direct2D</p>
     </div>
-    <p class="note">Без установщика и без Visual C++ Redistributable — один exe, статическая линковка (/MT).</p>
-  </section>
 
-  <section id="features" class="features">
-    <h2>Что умеет</h2>
-    <div class="grid">
-      <article class="card"><span class="cap" aria-hidden="true"></span>
-        <h3>Снег на гранях окон</h3>
-        <p>Снежинки оседают на верхнюю кромку каждого окна и на панель задач, скругление углов Windows 11 учитывается.</p>
-      </article>
-      <article class="card"><span class="cap" aria-hidden="true"></span>
-        <h3>Следует за окнами</h3>
-        <p>Двигаешь окно — сугроб едет с ним; резкий «бросок» стряхивает снег. Синхронизация с DWM, не по опросу.</p>
-      </article>
-      <article class="card"><span class="cap" aria-hidden="true"></span>
-        <h3>Ёлки и украшения</h3>
-        <p>Режим украшения (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd>): ставь ёлки и шары прямо на рабочий стол.</p>
-      </article>
-      <article class="card"><span class="cap" aria-hidden="true"></span>
-        <h3>Снежки и снеговики</h3>
-        <p>Скатывай снежки мышкой из выпавшего снега и складывай из них снеговиков — они катаются по твоим окнам.</p>
-      </article>
-      <article class="card"><span class="cap" aria-hidden="true"></span>
-        <h3>Гости</h3>
-        <p>Санта с подарками, поезд, который сбивает снеговиков с рельсов, и йети, который охотится на снеговиков.</p>
-      </article>
-      <article class="card"><span class="cap" aria-hidden="true"></span>
-        <h3>Всё в трее</h3>
-        <p>Вкл/выкл, интенсивность, эффект, тема, «Украсить…», «Удиви меня», язык, автозапуск — без открывания настроек.</p>
-      </article>
+    <div class="demo-stage" id="stage">
+      <canvas id="demo-canvas" aria-hidden="true"></canvas>
+      <div class="demo-win" id="demo-win">
+        <div class="demo-titlebar" id="demo-titlebar">
+          <span class="demo-docicon">📝</span><span class="demo-wintitle" data-i18n="demo.win">Заметки.txt — Блокнот</span>
+          <span class="demo-btns"><i></i><i></i><i class="x"></i></span>
+        </div>
+        <div class="demo-body">
+          <p data-i18n="demo.l1">Привет! Это обычное окно Windows.</p>
+          <p data-i18n="demo.l2">Но на его шапке уже лежит снег…</p>
+          <p class="dim" data-i18n="demo.l3">Схвати меня за шапку и потащи. Дёрни резко — снег слетит!</p>
+        </div>
+      </div>
+      <div class="demo-hint" data-i18n="demo.hint">Снег ложится на шапку окна и едет вместе с ним. Потяни окно — проверь!</div>
+      <button class="btn btn-sm demo-shake" id="shake-btn" data-i18n="demo.shake">Потрясти окно</button>
     </div>
   </section>
 
-  <section id="how" class="how">
-    <h2>Как поставить</h2>
+  <!-- BENTO -->
+  <section class="features" id="features">
+    <h2 class="rv" data-i18n="bento.h">Фишки</h2>
+    <div class="bento">
+      <article class="card b1 rv"><h3 data-i18n="b1t">Снег на каждом окне</h3><p data-i18n="b1d">Попиксельная привязка к границам окон (DWM) — снег лежит ровно на шапке окна и мгновенно следует за ним при перетаскивании.</p><div class="mock"><span class="mock-bar"></span><span class="mock-pile"></span></div></article>
+      <article class="card b2 rv"><h3 data-i18n="b2t">Физика рывка и сворачивания</h3><p data-i18n="b2d">Швырни окно — снег разлетится; сверни окно — сугроб красиво осыплется на окно снизу или на панель задач.</p></article>
+      <article class="card b3 rv"><h3 data-i18n="b3t">Лепи снеговиков мышкой</h3><p data-i18n="b3d">Зажми ЛКМ на сугробе и катай снежный ком, чтобы он рос, а затем поставь шары друг на друга прямо на окне.</p><div class="mock snowman"><i class="sm-b"></i><i class="sm-m"></i><i class="sm-t"></i></div></article>
+      <article class="card b4 rv"><h3 data-i18n="b4t">Живой новогодний мир</h3><p data-i18n="b4d">До 3 наряжаемых ёлок с гирляндами и шарами, любопытный Санта, йети и новогодний поезд, который с физикой сбивает снеговиков на своём пути.</p><div class="trees" aria-hidden="true"><span>▲</span><span>▲</span><span>▲</span></div></article>
+      <article class="card b5 rv"><h3 data-i18n="b5t">Умная пауза в играх и браузере</h3><p data-i18n="b5d">Мгновенно скрывается за 0 мс, когда ты открываешь игру, YouTube или браузер на весь экран — ноль помех и 0% нагрузки в фоне.</p></article>
+      <article class="card b6 rv"><h3 data-i18n="b6t">Современные настройки в стиле Windows 11</h3><p data-i18n="b6d">Тёмная и светлая тема, выбор цвета снега, лимит FPS (30–144 Гц), поддержка нескольких мониторов и разных DPI.</p></article>
+    </div>
+  </section>
+
+  <!-- ТЕХНИКА -->
+  <section class="tech" id="tech">
+    <h2 class="rv" data-i18n="tech.h">Лёгкий и быстрый</h2>
+    <div class="stats">
+      <article class="card stat rv"><span class="big">C++</span><h3 data-i18n="t1t">Нативный C++ и Direct2D</h3><p data-i18n="t1d">Никакого тяжёлого Electron — миллионы снежинок рендерит видеокарта.</p></article>
+      <article class="card stat rv"><span class="big">~3%</span><h3 data-i18n="t2t">Нагрузка на CPU</h3><p data-i18n="t2d">И минимум оперативной памяти. Даже на старых ноутбуках.</p></article>
+      <article class="card stat rv"><span class="big">0&nbsp;мс</span><h3 data-i18n="t3t">Сквозные клики</h3><p data-i18n="t3d">Снег никогда не перекрывает нажатия по твоим программам.</p></article>
+    </div>
+  </section>
+
+  <!-- БЫСТРЫЙ СТАРТ -->
+  <section class="how" id="how">
+    <h2 class="rv" data-i18n="how.h">Быстрый старт за 3 шага</h2>
     <ol class="steps">
-      <li><b>Скачай zip</b> со страницы <a href="https://github.com/4JIeHoroJIoBbIU/desktop-weather/releases" target="_blank" rel="noopener">Releases</a> — pre-release <code>preview-&lt;commit&gt;</code>.</li>
-      <li><b>Распакуй</b> в любую папку. Внутри <code>DesktopSnow.exe</code> и <code>START.cmd</code>.</li>
-      <li><b>Запусти</b> <code>DesktopSnow.exe</code> — в трее появится снежинка (если скрыта — вытащи из «^»).</li>
-      <li><b>Настрой</b> через трей-меню: интенсивность, эффект, тема, украшения. Снег вкл/выкл — <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>.</li>
+      <li class="rv"><i>1</i><div><h3 data-i18n="s1t">Скачай ZIP-архив</h3><p data-i18n="s1d">со страницы GitHub Releases — это займёт секунды.</p></div></li>
+      <li class="rv"><i>2</i><div><h3 data-i18n="s2t">Распакуй в любую папку</h3><p data-i18n="s2d">Установка не нужна — всё в одном архиве.</p></div></li>
+      <li class="rv"><i>3</i><div><h3 data-i18n="s3t">Запусти DesktopSnow.exe</h3><p data-i18n="s3d">И наслаждайся атмосферой — снег пойдёт сразу.</p></div></li>
     </ol>
-    <table class="keys">
-      <caption>Горячие клавиши</caption>
-      <tr><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd></td><td>снег вкл / выкл</td></tr>
-      <tr><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd></td><td>режим украшения · выход — <kbd>Esc</kbd> или правый клик</td></tr>
-    </table>
-    <p class="note">Настройки хранятся в <code>%APPDATA%\DesktopSnow\state.json</code> — версия, атомарная запись, резервная копия <code>state.json.bak</code>. Настройки старой Electron-версии подхватываются при первом запуске.</p>
-  </section>
-
-  <section id="tech" class="tech">
-    <h2>Под капотом</h2>
-    <ul class="specs">
-      <li><b>Нативный C++20</b> — Win32, Direct3D 11, DirectComposition, Direct2D</li>
-      <li><b>Один exe</b> — без установщика, без рантайм-зависимостей</li>
-      <li><b>События, а не поллинг</b> — SetWinEventHook на отдельном потоке + DWM-синхронизация кадров</li>
-      <li><b>DPI-aware</b> (per-monitor v2), физические пиксели везде</li>
-      <li><b>Сборка из исходников</b> — <code>build.cmd</code>, CMake, MSVC</li>
-    </ul>
   </section>
 </main>
 
 <footer class="foot">
-  <span>Desktop Snow — неофициальный фан-сайт проекта</span>
-  <a href="https://github.com/4JIeHoroJIoBbIU/desktop-weather" target="_blank" rel="noopener">Исходники на GitHub</a>
+  <span data-i18n="foot.sig">Сделано с любовью к снегу. С Новым годом!</span>
+  <div class="foot-links">
+    <a href="https://github.com/pidarasiki2015/desktop-weather" target="_blank" rel="noopener" data-i18n="foot.repo">GitHub-репозиторий</a>
+    <a href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="foot.rel">Релизы</a>
+    <div class="langs" role="group" aria-label="Language">
+      <button class="lang" data-lang="ru">RU</button><button class="lang" data-lang="ua">UA</button><button class="lang" data-lang="en">EN</button>
+    </div>
+  </div>
 </footer>
 
 <script src="app.js"></script>

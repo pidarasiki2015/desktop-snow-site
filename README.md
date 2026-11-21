@@ -1,11 +1,10 @@
 # desktop-snow-site
 
-Лендинг проекта **Desktop Snow** (новогодний оверлей для Windows 10/11) — снегопад на грани окон, ёлки, снежки, снеговики, Санта, поезд и йети.
+Лендинг приложения **Desktop Snow** — «Новый год уже здесь. Прямо на твоём рабочем столе».
 
-Статичный сайт: `index.html` + `style.css` + `app.js` (canvas-снегопад, уважает `prefers-reduced-motion`). Никаких зависимостей и сборки.
+Статичный сайт без сборки и зависимостей: `index.html` + `style.css` + `app.js`.
+Внутри: canvas-снегопад с 3 слоями параллакса и ветром от курсора, **живое интерактивное демо** (окно Windows 11, на шапку которого падает снег; можно таскать, трясти, смахивать), бенто-сетка фич, RU/UA/EN переключатель, `prefers-reduced-motion`, пауза анимаций на скрытой вкладке.
 
-Публикуется через GitHub Pages: https://4jlehorojiobbiu.github.io/desktop-snow-site/
+Живой сайт: https://pidarasiki2015.github.io/desktop-snow-site/
 
-Кнопка «Скачать» ведёт на pre-release (`preview-<commit>`) основного репо: <https://github.com/4JIeHoroJIoBbIU/desktop-weather/releases>
-
-Контент (фичи, хоткеи, установка) собран из README ветки `hoplite/rhegion-c014c847` репозитория desktop-weather.
+Кнопки «Скачать» ведут на релизы основного репо: <https://github.com/pidarasiki2015/desktop-weather/releases>
