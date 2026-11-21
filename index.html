@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desktop Snow — Новый год уже здесь</title>
+<meta name="description" content="Новогодний оверлей для Windows 10/11: снег ложится на грани окон и панель задач, снеговики, ёлки, Санта, поезд и йети. Один exe без установщика.">
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <a class="brand" href="#top"><img src="favicon.ico" alt="" width="22" height="22">Desktop Snow</a>
+  <nav class="links">
+    <a href="#features">Возможности</a>
+    <a href="#how">Как поставить</a>
+    <a href="#tech">Под капотом</a>
+    <a class="btn btn-sm" href="https://github.com/4JIeHoroJIoBbIU/desktop-weather/releases" target="_blank" rel="noopener">Скачать</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <p class="kicker">Оверлей для Windows 10 (2004+) и Windows 11</p>
+    <h1>Новый год<br><span>уже на твоём&nbsp;рабочем столе</span></h1>
+    <p class="lead">Снег идёт поверх всего экрана и <b>ложится на верхние грани окон и панель задач</b>.
+    Тащишь окно — сугроб едет вместе с ним. Дёрнул резко — снег слетает.
+    Выращивай ёлки, катай снежки, ставь снеговиков — и лови гостей.</p>
+    <div class="cta">
+      <a class="btn btn-lg" href="https://github.com/4JIeHoroJIoBbIU/desktop-weather/releases" target="_blank" rel="noopener">Скачать zip с Release</a>
+      <a class="btn btn-lg btn-ghost" href="#how">Как это запустить</a>
+    </div>
+    <p class="note">Без установщика и без Visual C++ Redistributable — один exe, статическая линковка (/MT).</p>
+  </section>
+
+  <section id="features" class="features">
+    <h2>Что умеет</h2>
+    <div class="grid">
+      <article class="card"><span class="cap" aria-hidden="true"></span>
+        <h3>Снег на гранях окон</h3>
+        <p>Снежинки оседают на верхнюю кромку каждого окна и на панель задач, скругление углов Windows 11 учитывается.</p>
+      </article>
+      <article class="card"><span class="cap" aria-hidden="true"></span>
+        <h3>Следует за окнами</h3>
+        <p>Двигаешь окно — сугроб едет с ним; резкий «бросок» стряхивает снег. Синхронизация с DWM, не по опросу.</p>
+      </article>
+      <article class="card"><span class="cap" aria-hidden="true"></span>
+        <h3>Ёлки и украшения</h3>
+        <p>Режим украшения (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd>): ставь ёлки и шары прямо на рабочий стол.</p>
+      </article>
+      <article class="card"><span class="cap" aria-hidden="true"></span>
+        <h3>Снежки и снеговики</h3>
+        <p>Скатывай снежки мышкой из выпавшего снега и складывай из них снеговиков — они катаются по твоим окнам.</p>
+      </article>
+      <article class="card"><span class="cap" aria-hidden="true"></span>
+        <h3>Гости</h3>
+        <p>Санта с подарками, поезд, который сбивает снеговиков с рельсов, и йети, который охотится на снеговиков.</p>
+      </article>
+      <article class="card"><span class="cap" aria-hidden="true"></span>
+        <h3>Всё в трее</h3>
+        <p>Вкл/выкл, интенсивность, эффект, тема, «Украсить…», «Удиви меня», язык, автозапуск — без открывания настроек.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="how" class="how">
+    <h2>Как поставить</h2>
+    <ol class="steps">
+      <li><b>Скачай zip</b> со страницы <a href="https://github.com/4JIeHoroJIoBbIU/desktop-weather/releases" target="_blank" rel="noopener">Releases</a> — pre-release <code>preview-&lt;commit&gt;</code>.</li>
+      <li><b>Распакуй</b> в любую папку. Внутри <code>DesktopSnow.exe</code> и <code>START.cmd</code>.</li>
+      <li><b>Запусти</b> <code>DesktopSnow.exe</code> — в трее появится снежинка (если скрыта — вытащи из «^»).</li>
+      <li><b>Настрой</b> через трей-меню: интенсивность, эффект, тема, украшения. Снег вкл/выкл — <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd>.</li>
+    </ol>
+    <table class="keys">
+      <caption>Горячие клавиши</caption>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>S</kbd></td><td>снег вкл / выкл</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd></td><td>режим украшения · выход — <kbd>Esc</kbd> или правый клик</td></tr>
+    </table>
+    <p class="note">Настройки хранятся в <code>%APPDATA%\DesktopSnow\state.json</code> — версия, атомарная запись, резервная копия <code>state.json.bak</code>. Настройки старой Electron-версии подхватываются при первом запуске.</p>
+  </section>
+
+  <section id="tech" class="tech">
+    <h2>Под капотом</h2>
+    <ul class="specs">
+      <li><b>Нативный C++20</b> — Win32, Direct3D 11, DirectComposition, Direct2D</li>
+      <li><b>Один exe</b> — без установщика, без рантайм-зависимостей</li>
+      <li><b>События, а не поллинг</b> — SetWinEventHook на отдельном потоке + DWM-синхронизация кадров</li>
+      <li><b>DPI-aware</b> (per-monitor v2), физические пиксели везде</li>
+      <li><b>Сборка из исходников</b> — <code>build.cmd</code>, CMake, MSVC</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>Desktop Snow — неофициальный фан-сайт проекта</span>
+  <a href="https://github.com/4JIeHoroJIoBbIU/desktop-weather" target="_blank" rel="noopener">Исходники на GitHub</a>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
