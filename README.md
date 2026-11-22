@@ -17,4 +17,6 @@
 
 Живой сайт: <https://pidarasiki2015.github.io/desktop-snow-site/>
 
-Кнопки «Скачать» ведут на релизы основного репо: <https://github.com/pidarasiki2015/desktop-weather/releases>
+Скачивание и исходный код приложения: <https://github.com/pusdy40k1337/desktop-snow/releases>
+- `DesktopSnow.exe` — один самодостаточный exe (без установки, без VC++ runtime);
+- `DesktopSnow-portable.zip` — пакет с лаунчерами и README.
