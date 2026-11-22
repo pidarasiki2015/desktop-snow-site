@@ -97,14 +97,14 @@
 
 **Font Stack:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap');
 ```
 
 | Role | Font | Size | Weight | Line Height | Letter Spacing |
 |------|------|------|--------|-------------|----------------|
-| Hero H1 | Plus Jakarta Sans | `clamp(40px, 6vw, 72px)` | 800 | 1.02 | −0.04em |
-| Section H2 | Plus Jakarta Sans | `clamp(30px, 3.8vw, 44px)` | 800 | 1.08 | −0.03em |
-| H3 (карточки) | Plus Jakarta Sans | 20px | 700 | 1.25 | −0.01em |
+| Hero H1 | Manrope | `clamp(40px, 6vw, 72px)` | 800 | 1.02 | −0.04em |
+| Section H2 | Manrope | `clamp(30px, 3.8vw, 44px)` | 800 | 1.08 | −0.03em |
+| H3 (карточки) | Manrope | 20px | 700 | 1.25 | −0.01em |
 | Hero lead | Inter | `clamp(16px, 1.8vw, 19px)` | 400 | 1.65 | 0.01em |
 | Body | Inter | 17px | 400 | 1.65 | 0.01em |
 | Body Small | Inter | 15px | 400 | 1.6 | 0.01em |
@@ -114,7 +114,8 @@
 | Caption | Inter | 13px | 500 | 1.5 | 0.01em |
 
 **Typography Rules:**
-- Заголовки — только Plus Jakarta Sans 700/800 с отрицательным трекингом; Inter 400 в заголовках запрещён.
+- Заголовки — только **Manrope 700/800** с отрицательным трекингом; Inter 400 в заголовках запрещён.
+- Manrope выбран вместо Plus Jakarta Sans осознанно: **Plus Jakarta Sans не содержит кириллицу** (RU/UA-заголовки слетели бы на системный fallback), Manrope поддерживает latin + cyrillic + cyrillic-ext.
 - Body — Inter 400/500; положительный межбуквенный интервал `+0.01em` (тёмный фон «разрежает» текст).
 - **NEVER use**: Arial, системные шрифты по умолчанию (`system-ui` для заголовков), любые serif, Comic-подобные.
 - `word-break` заголовков: `&nbsp;` вручную в RU/UA/EN, чтобы не было висячих слов («на&nbsp;твоём рабочем&nbsp;столе»).
@@ -269,6 +270,22 @@
 }
 ```
 
+### Hero rim drift — живой сугроб на кромке витрины (правка пользователя)
+
+```css
+.showcase { position: relative; }
+.drift { position: absolute; left: 0; right: 0; top: -28px; height: 36px; width: 100%;
+         z-index: 3; pointer-events: none; }
+.shot-frame { position: relative; z-index: 2; }
+.shot-drift-hint { margin-top: 14px; text-align: center; font: 500 12px/1.5 'JetBrains Mono', monospace; color: var(--text-3); }
+```
+
+- Отдельный тонкий canvas над верхней кромкой `.shot-frame`, профиль из ~96 колонок.
+- Частицы главного снегопада, пересекая кромку витрины (по `getBoundingClientRect`), **реально оседают**: высота колонки +0.6…1.4px, кап 14px (desktop) / 10px (mobile), соседние колонки получают половину прироста — профиль неровный, живой.
+- Клик по витрине или тряска (drag > 60px) — сугроб осыпается: высоты в 0 + залп частиц из него.
+- `Ctrl+Alt+S` — снег выключается, сугроб плавно тает (×0.86/кадр) до нуля.
+- Цвет сугроба = текущий цвет снега (4 свотча). Это настоящая физика страницы — никаких нарисованных окон.
+
 ---
 
 ## 5. Layout Principles
@@ -325,7 +342,7 @@
 | 3 | Text — Body/Label | ScrollReveal: `.rv{opacity:0; transform:translateY(16px)}` → `.in`, stagger через `--i` (70ms шаг) | CSS + IO (threshold .15) |
 | 4 | Element | **Magnet** на главном CTA (±6px к курсору, `rAF`-троттлинг, только `hover:hover`) + GlareHover на витрине | JS 15 строк |
 | 5 | Component | **SpotlightCard** на bento (`--mx/--my` + `::before` radial 240px) + табы скриншотов с переходом `opacity + scale(.985→1)` 280ms | CSS vars + JS |
-| 6 | Background | CSS Aurora (2 радиальных градиента, fixed) + Canvas-снегопад: 3 слоя глубины, ветер, реакция на курсор, 4 цвета | Canvas 2D, один rAF |
+| 6 | Background | CSS Aurora (2 радиальных градиента, fixed) + Canvas-снегопад: 3 слоя глубины, ветер, реакция на курсор, 4 цвета; частицы **оседают живым сугробом на кромке hero-витрины** (клик/тряска стряхивает, Ctrl+Alt+S — тает) | Canvas 2D, один rAF |
 
 ### Base Setup (снегопад — ключевая механика страницы)
 ```js
@@ -367,6 +384,7 @@
 - Aurora: два пятна — северное (синее, `--glow-ice`) за hero и южное (красное, `--glow-red`) за футером; между ними страница «дышит» обсидианом.
 - Свечение витрины: радиальный ореол синий/красный позади `.shot-frame` (псевдоэлемент, `z-index:-1`), **без** `filter: blur()`.
 - Тихая деталь: точка-индикатор в бейдже «Windows 10 / 11» медленно пульсирует (opacity 1→.5, 2.4s) — единственная «живая» точка вне снега.
+- Hero rim drift: сугроб на кромке витрины — см. §4, «Hero rim drift». Обязательная проверка: через ~6 с снегопада `driftMax > 0`, клик → `driftMax = 0`, Ctrl+Alt+S → таяние до 0.
 
 ### Reduced Motion
 ```css
@@ -449,7 +467,7 @@
 | Файл | Размер | Где используется |
 |------|--------|------------------|
 | `screenshots/settings-general.png` | 972×724 (1.343) | секция «Интерфейс», таб «Общие» |
-| `screenshots/settings-snow.png` | 977×725 (1.348) | **Hero-витрина** (самый визуальный: слайдеры + 4 цвета) + таб «Снег» |
+| `screenshots/settings-snow.png` | 977×725 (1.348) | **Hero-витрина** (самый визуальный: слайдеры + 4 цвета); на верхней кромке — живой canvas-сугроб + таб «Снег» |
 | `screenshots/settings-decor.png` | 983×718 (1.369) | секция «Интерфейс», таб «Украшения» |
 
 `demo.mp4` отсутствует (видео отложено пользователем) → по брифу Hero использует «крупную презентацию реальных скриншотов». Никаких других иллюстраций не создаётся: логотип — инлайн-SVG снежинка, иконки — инлайн-SVG (без библиотек).
