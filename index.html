@@ -1,165 +1,187 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desktop Snow — Новый год уже здесь. Прямо на твоём рабочем столе</title>
-<meta name="description" content="Живой снег на каждом окне Windows 10/11: попиксельная привязка DWM, мгновенная пауза в играх, лепка снеговиков и новогодний поезд. Нативный C++ + Direct2D, меньше 1 МБ, без установки.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desktop Snow — Новый год уже здесь</title>
+<meta name="description" content="Живой снег на каждом окне Windows 10/11: попиксельная привязка к рамкам, снеговики, ёлки, поезд и пауза за 0 мс в играх.">
+<meta name="theme-color" content="#070709">
 <link rel="icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="style.css?v=1">
 </head>
 <body>
-<canvas id="snow" aria-hidden="true"></canvas>
 
-<header class="nav">
-  <a class="brand" href="#top">
-    <svg class="flake" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 2v20M4 7l16 10M20 7L4 17M12 2l-2.5 3M12 2l2.5 3M12 22l-2.5-3M12 22l2.5-3M4 7l3.8.8M4 7l.8 3.8M20 17l-3.8-.8M20 17l-.8-3.8M20 7l-3.8.8M20 7l-.8 3.8M4 17l3.8-.8M4 17l.8-3.8" stroke="#38BDF8" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
-    <span>Desktop&nbsp;Snow</span>
-  </a>
-  <nav class="links">
-    <a href="#s1" data-i18n="nav.features">Возможности</a>
-    <a href="#s3" data-i18n="nav.settings">Настройки</a>
-    <div class="langs" role="group" aria-label="Language">
-      <button class="lang on" data-lang="ru">RU</button><button class="lang" data-lang="ua">UA</button><button class="lang" data-lang="en">EN</button>
+<a class="skip" href="#main">К содержимому</a>
+
+<canvas id="snow" aria-hidden="true"></canvas>
+<div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i></div>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="logo" href="#top" aria-label="Desktop Snow — наверх">
+      <svg class="logo-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Desktop Snow</span>
+    </a>
+    <nav class="nav-links" aria-label="Основное меню">
+      <a href="#features" data-i18n="nav.features">Возможности</a>
+      <a href="#interface" data-i18n="nav.interface">Интерфейс</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang" role="group" aria-label="Язык / Language">
+        <button class="lang-btn" type="button" data-setlang="ru" aria-pressed="true">RU</button>
+        <button class="lang-btn" type="button" data-setlang="ua" aria-pressed="false">UA</button>
+        <button class="lang-btn" type="button" data-setlang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="btn btn-primary btn-nav" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="nav.download">Скачать</a>
     </div>
-    <a class="btn btn-white btn-sm" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="nav.dl">Скачать</a>
-  </nav>
+  </div>
 </header>
 
-<main id="top">
+<main id="main">
 
-  <!-- ═══ HERO: центральная композиция в стиле Raycast ═══ -->
-  <section class="hero">
-    <h1 class="rv" data-i18n="hero.h">Новый год уже&nbsp;здесь.<br>Прямо на твоём рабочем&nbsp;столе</h1>
-    <p class="lead rv" data-i18n="hero.lead">Живой снег на каждом окне, лепка снеговиков мышкой, поезд с подарками и мгновенная пауза в играх. Нативно для Windows 10 и 11.</p>
-    <div class="cta rv">
-      <a class="btn btn-white" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="hero.dl">Скачать для Windows</a>
-      <button class="btn btn-glass" id="btn-shake" type="button" data-i18n="hero.shake">Потрясти окно</button>
+  <section class="hero container" id="top">
+    <div class="badge rv"><span class="live-dot" aria-hidden="true"></span><span data-i18n="hero.badge">Windows 10 / 11 · Бесплатно</span></div>
+    <h1 class="h1" id="h1">
+      <span class="line" data-i18n="hero.h1a">Новый год уже здесь.</span>
+      <span class="line" data-i18n="hero.h1b">Прямо на&nbsp;твоём рабочем&nbsp;столе.</span>
+    </h1>
+    <p class="lead rv" data-i18n="hero.lead">Живой снег на каждом окне, интерактивные снеговики, поезд с подарками и мгновенная пауза в играх. Нативно для Windows 10 и&nbsp;11.</p>
+    <div class="hero-ctas rv">
+      <span class="magnet-wrap">
+        <a class="btn btn-primary magnet" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 20h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span data-i18n="hero.cta">Скачать для Windows</span>
+        </a>
+      </span>
+      <a class="btn btn-ghost" href="https://github.com/pidarasiki2015/desktop-weather" target="_blank" rel="noopener" data-i18n="hero.ghost">GitHub</a>
     </div>
-    <p class="tech rv mono" data-i18n="hero.tech">Бесплатно • C++ &amp; Direct2D • &lt; 1 МБ • Без установки</p>
+    <p class="techline rv" data-i18n="hero.tech">Бесплатно • C++ &amp; Direct2D • &lt; 1 МБ • 30–144 FPS • Без установки</p>
 
-    <div class="snowpick rv" role="group" aria-label="Snow color">
-      <span class="pick-label" data-i18n="pick.label">Цвет снега</span>
-      <div class="swatches">
-        <button class="sw on" data-col="#FFFFFF" style="--c:#FFFFFF" aria-label="White"></button>
-        <button class="sw" data-col="#BAE6FD" style="--c:#BAE6FD" aria-label="Ice blue"></button>
-        <button class="sw" data-col="#EF4444" style="--c:#EF4444" aria-label="Christmas red"></button>
-        <button class="sw" data-col="#FDE68A" style="--c:#FDE68A" aria-label="Gold"></button>
-      </div>
-      <span class="pick-name mono" id="panel-colname" data-i18n="col.c1">Белый</span>
+    <div class="snowctl rv" role="group" aria-label="Цвет снега">
+      <span class="snowctl-label" data-i18n="hero.snowlabel">Цвет снега</span>
+      <button class="swatch" type="button" data-snow="1" style="--c:var(--snow-1)" aria-pressed="true" aria-label="Белый"></button>
+      <button class="swatch" type="button" data-snow="2" style="--c:var(--snow-2)" aria-pressed="false" aria-label="Ледяной синий"></button>
+      <button class="swatch" type="button" data-snow="3" style="--c:var(--snow-3)" aria-pressed="false" aria-label="Тёплое золото"></button>
+      <button class="swatch" type="button" data-snow="4" style="--c:var(--snow-4)" aria-pressed="false" aria-label="Нежно-розовый"></button>
+      <span class="snowctl-hint" data-i18n="hero.hint">Ctrl+Alt+S — снег вкл/выкл</span>
     </div>
 
-    <!-- витрина: сине-красное свечение + живое окно Windows 11 -->
-    <div class="showcase rv" id="stage">
-      <div class="aurora a1" aria-hidden="true"></div>
-      <div class="aurora a2" aria-hidden="true"></div>
-      <div class="demo-win" id="demo-win">
-        <div class="demo-titlebar" id="demo-titlebar">
-          <svg class="docicon" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M4 1.5h5.2L12.5 5v9.5h-8.5z" fill="none" stroke="#8E8E93" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 1.8V5.2h3.2" fill="none" stroke="#8E8E93" stroke-width="1.2" stroke-linejoin="round"/><path d="M5.8 8h4.4M5.8 10.4h4.4" stroke="#5A5A60" stroke-width="1.1" stroke-linecap="round"/></svg>
-          <span class="demo-wintitle" data-i18n="demo.win">Заметки.txt — Блокнот</span>
-          <button class="gamechip" id="game-btn" aria-pressed="false" type="button"><span data-i18n="demo.game">Режим игры</span><kbd class="mono">F11</kbd></button>
-          <span class="demo-btns">
-            <i class="wb"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M2.5 6h7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></i>
-            <i class="wb"><svg viewBox="0 0 12 12" width="12" height="12"><rect x="3" y="3" width="6" height="6" rx="1" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></i>
-            <i class="wb close"><svg viewBox="0 0 12 12" width="12" height="12"><path d="M3.2 3.2l5.6 5.6M8.8 3.2L3.2 8.8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg></i>
-          </span>
-        </div>
-        <div class="demo-body">
-          <p data-i18n="demo.l1">Привет! Это обычное окно Windows.</p>
-          <p data-i18n="demo.l2">Но на его шапке уже лежит снег…</p>
-          <p class="dim" data-i18n="demo.l3">Схвати меня за шапку и потащи. Дёрни резко — снег слетит!</p>
-        </div>
-      </div>
-      <div class="demo-taskbar">
-        <div class="tb-center">
-          <span class="tb-ic"><svg viewBox="0 0 16 16" width="14" height="14"><rect x="1.5" y="1.5" width="5.4" height="5.4" rx="1" fill="#5AA7E0"/><rect x="9.1" y="1.5" width="5.4" height="5.4" rx="1" fill="#7FB86F"/><rect x="1.5" y="9.1" width="5.4" height="5.4" rx="1" fill="#DBA84E"/><rect x="9.1" y="9.1" width="5.4" height="5.4" rx="1" fill="#C97F86"/></svg></span>
-          <span class="tb-ic"><svg viewBox="0 0 16 16" width="14" height="14"><circle cx="7" cy="7" r="4.4" fill="none" stroke="#8E8E93" stroke-width="1.4"/><path d="M10.4 10.4 L13.6 13.6" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></svg></span>
-          <span class="tb-ic"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M1.8 4.2 h4.4 l1.4 1.8 h6.6 v6.6 a1 1 0 0 1 -1 1 H2.8 a1 1 0 0 1 -1 -1 z" fill="#C79A4B"/><path d="M1.8 4.2 h4.4 l1.4 1.8 h6.6 v1.4 H1.8 z" fill="#DDB269"/></svg></span>
-          <span class="tb-ic"><svg viewBox="0 0 16 16" width="14" height="14"><path d="M2.2 2.5h11.6a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2.2a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z" fill="#3E6DB0"/><path d="M1.2 5.2 h13.6 v1.6 H1.2 z" fill="#7FA6D8" opacity=".85"/><path d="M4.4 9h7.2M4.4 11h4.6" stroke="#D8E4F6" stroke-width="1.1" stroke-linecap="round"/></svg></span>
-          <span class="tb-ic"><svg viewBox="0 0 16 16" width="14" height="14"><rect x="1.8" y="3" width="12.4" height="10" rx="1.4" fill="none" stroke="#8E8E93" stroke-width="1.3"/><path d="M2.4 4.4 8 9l5.6-4.6" fill="none" stroke="#8E8E93" stroke-width="1.3" stroke-linejoin="round"/></svg></span>
-        </div>
-        <div class="tb-tray">
-          <svg viewBox="0 0 16 16" width="12" height="12"><path d="M2 6.5a9 9 0 0 1 12 0M4.2 9a6 6 0 0 1 7.6 0M6.4 11.4a3 3 0 0 1 3.2 0" fill="none" stroke="#A1A1AA" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="13.2" r="1" fill="#A1A1AA"/></svg>
-          <svg viewBox="0 0 16 16" width="12" height="12"><path d="M2.5 6.2 v3.6 h2.4 L9 13 V3 L4.9 6.2 z" fill="#A1A1AA"/><path d="M11 5.6a3.4 3.4 0 0 1 0 4.8" fill="none" stroke="#A1A1AA" stroke-width="1.2" stroke-linecap="round"/></svg>
-          <svg viewBox="0 0 16 16" width="14" height="14"><rect x="2" y="5" width="10.4" height="6" rx="1.6" fill="none" stroke="#A1A1AA" stroke-width="1.2"/><rect x="3.3" y="6.3" width="6.6" height="3.4" rx=".7" fill="#A1A1AA"/><path d="M13.6 7 v2" stroke="#A1A1AA" stroke-width="1.4" stroke-linecap="round"/></svg>
-          <div class="tb-clock mono"><span id="tb-time">21:47</span><span id="tb-date">21.11.2026</span></div>
-        </div>
-      </div>
-      <canvas id="demo-canvas" aria-hidden="true"></canvas>
-      <div class="demo-badge mono" id="demo-badge" data-i18n="demo.paused">Снег на паузе · 0 мс</div>
-      <div class="demo-hint" data-i18n="demo.hint">Схвати окно за шапку — снег поедет вместе с ним. Дёрни резко — разлетится!</div>
-    </div>
-  </section>
-
-  <!-- ═══ 1. Снег, который чувствует каждое окно ═══ -->
-  <section class="feat" id="s1">
-    <h2 class="rv" data-i18n="s1.h">Снег, который чувствует каждое окно</h2>
-    <p class="feat-lead rv" data-i18n="s1.p">Снег держится ровно за видимой рамкой каждого окна — без зазоров. Свернёшь окно — сугроб красиво осыпется вниз. Запустишь игру, YouTube на весь экран или выделение области скриншота в Lightshot, ShareX и «Ножницах» — снег исчезает за 0 мс.</p>
-    <div class="panel rv"><canvas id="c-dwm" width="1920" height="760" aria-hidden="true"></canvas></div>
-    <div class="keys rv">
-      <div class="keyrow"><span class="keylbl" data-i18n="s1.k1">Снег вкл / выкл</span>
-        <span class="kbd-group"><kbd>Ctrl</kbd><i>+</i><kbd>Alt</kbd><i>+</i><kbd>S</kbd></span></div>
-      <div class="keyrow"><span class="keylbl" data-i18n="s1.k2">Украсить рабочий стол</span>
-        <span class="kbd-group"><kbd>Ctrl</kbd><i>+</i><kbd>Alt</kbd><i>+</i><kbd>D</kbd></span></div>
-    </div>
-  </section>
-
-  <!-- ═══ 2. Лепи снеговиков и запускай поезд ═══ -->
-  <section class="feat" id="s2">
-    <h2 class="rv" data-i18n="s2.h">Лепи снеговиков и запускай новогодний поезд</h2>
-    <p class="feat-lead rv" data-i18n="s2.p">Зажми левую кнопку мыши на сугробе и прокати снежный ком — из трёх комов получится снеговик. Новогодний поезд проносится по столу и с физикой разбрасывает снеговиков — через пару секунд они собираются обратно.</p>
-    <div class="panel rv"><canvas id="c-stage" width="1920" height="800" aria-hidden="true"></canvas></div>
-    <div class="stagebar rv">
-      <button class="btn btn-glass btn-sm" id="train-btn" type="button" data-i18n="s2.train">Запустить поезд</button>
-      <button class="btn btn-glass btn-sm" id="stage-reset" type="button" data-i18n="s2.reset">Сбросить</button>
-      <span class="hint mono" data-i18n="s2.hint">Зажми и катай ком по сугробу</span>
-    </div>
-  </section>
-
-  <!-- ═══ 3. Настоящие настройки Windows 11 ═══ -->
-  <section class="feat" id="s3">
-    <h2 class="rv" data-i18n="s3.h">Нативный интерфейс в стиле Windows 11</h2>
-    <p class="feat-lead rv" data-i18n="s3.p">Настоящее окно настроек в духе Mica: что падает, интенсивность, размер хлопьев, скорость и ветер, четыре цвета снега, украшения и мониторы.</p>
-    <div class="shotpanel rv">
-      <div class="shot-tabs" role="tablist" aria-label="Settings tabs">
-        <button class="tab on" data-shot="general" data-i18n="c4t1">Общие</button>
-        <button class="tab" data-shot="snow" data-i18n="c4t2">Снег</button>
-        <button class="tab" data-shot="decor" data-i18n="c4t3">Украшения</button>
-      </div>
-      <figure class="shot-frame">
-        <img id="shot-img" src="screenshots/settings-general.png" alt="Окно настроек Desktop Snow — вкладка «Общие»" width="972" height="724" loading="lazy">
+    <div class="showcase glowwrap rv" id="showcase" title="Кликни, чтобы стряхнуть снег">
+      <canvas class="drift" id="drift" aria-hidden="true"></canvas>
+      <figure class="shot-frame" id="heroFrame">
+        <img src="screenshots/settings-snow.png" width="977" height="725" alt="Desktop Snow — окно настроек, вкладка «Снег»" decoding="async">
       </figure>
-      <p class="shot-cap mono" id="shot-cap" data-i18n="c4cap.g">Общие — снегопад, автозапуск, паузы и горячие клавиши</p>
+      <p class="shot-drift-hint" data-i18n="hero.driftHint">Снег оседает на&nbsp;кромке. Кликни или потряси витрину, чтобы стряхнуть.</p>
     </div>
   </section>
 
-  <!-- ═══ Финальный призыв ═══ -->
-  <section class="cta2">
-    <h2 class="rv" data-i18n="cta.h">Готов к Новому году?</h2>
-    <div class="rv">
-      <a class="btn btn-white btn-lg" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="cta.btn">Скачать Desktop Snow</a>
+  <section class="features container" id="features">
+    <div class="sec-head">
+      <span class="eyebrow rv" data-i18n="feat.eyebrow">Возможности</span>
+      <h2 class="h2 rv" data-i18n="feat.title">Каждая деталь — про&nbsp;зиму</h2>
     </div>
-    <a class="cta-link mono rv" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="cta.link">GitHub Releases →</a>
+    <div class="bento">
+      <article class="card w7 spot rv">
+        <span class="eyebrow" data-i18n="feat.dwm.e">DWM</span>
+        <h3 data-i18n="feat.dwm.t">Попиксельная привязка</h3>
+        <p data-i18n="feat.dwm.d">Снег лежит ровно на верхней рамке каждого окна и живёт по законам Windows:</p>
+        <ul class="mini">
+          <li data-i18n="feat.dwm.l1">едет за окном пиксель-в-пиксель</li>
+          <li data-i18n="feat.dwm.l2">разлетается при резком рывке</li>
+          <li data-i18n="feat.dwm.l3">осыпается при сворачивании</li>
+        </ul>
+        <p class="small">Desktop Window Manager • Windows 10/11</p>
+      </article>
+      <article class="card w5 spot rv">
+        <span class="eyebrow" data-i18n="feat.pause.e">Умная пауза</span>
+        <div class="bigzero" aria-hidden="true"><span>0</span><em data-i18n="feat.pause.unit">мс</em></div>
+        <h3 data-i18n="feat.pause.t">Пауза за 0&nbsp;мс</h3>
+        <p data-i18n="feat.pause.d">Мгновенно исчезает в играх, на YouTube во&nbsp;весь экран и во&nbsp;время выделения области скриншота.</p>
+        <div class="chips"><span class="chip">Lightshot</span><span class="chip">ShareX</span><span class="chip" data-i18n="feat.pause.c3">«Ножницы»</span></div>
+      </article>
+      <article class="card w5 spot rv">
+        <span class="eyebrow" data-i18n="feat.world.e">Живой мир</span>
+        <h3 data-i18n="feat.world.t">Снеговики, ёлки и&nbsp;поезд</h3>
+        <p data-i18n="feat.world.d">Живой мир поверх рабочего стола: Санта, йети и&nbsp;поезд с&nbsp;подарками сбивает снеговиков на&nbsp;своём пути — и&nbsp;они собираются обратно.</p>
+        <ul class="mini">
+          <li data-i18n="feat.world.l1">снеговики лепятся зажатием ЛКМ</li>
+          <li data-i18n="feat.world.l2">до&nbsp;3&nbsp;ёлок в&nbsp;4&nbsp;темах оформления</li>
+          <li data-i18n="feat.world.l3">поезд с&nbsp;подарками и&nbsp;Санта в&nbsp;гостях</li>
+        </ul>
+      </article>
+      <article class="card w7 spot rv">
+        <span class="eyebrow" data-i18n="feat.keys.e">Хоткеи</span>
+        <h3 data-i18n="feat.keys.t">Управление из&nbsp;любого приложения</h3>
+        <div class="keyrow">
+          <span class="keyrow-caption" data-i18n="feat.keys.c1">Снег вкл/выкл</span>
+          <span class="keys"><kbd class="kbd">Ctrl</kbd><span class="kbd-plus">+</span><kbd class="kbd">Alt</kbd><span class="kbd-plus">+</span><kbd class="kbd">S</kbd></span>
+        </div>
+        <div class="keyrow">
+          <span class="keyrow-caption" data-i18n="feat.keys.c2">Украсить сейчас</span>
+          <span class="keys"><kbd class="kbd">Ctrl</kbd><span class="kbd-plus">+</span><kbd class="kbd">Alt</kbd><span class="kbd-plus">+</span><kbd class="kbd">D</kbd></span>
+        </div>
+        <p class="small" data-i18n="feat.keys.d">Работают глобально — даже когда окно приложения свёрнуто.</p>
+      </article>
+    </div>
   </section>
+
+  <section class="interface container" id="interface">
+    <div class="sec-head">
+      <span class="eyebrow rv" data-i18n="ui.eyebrow">Интерфейс</span>
+      <h2 class="h2 rv" data-i18n="ui.title">Настройки в&nbsp;стиле Windows&nbsp;11</h2>
+      <p class="sec-lead rv" data-i18n="ui.lead">Родные окна приложения: слайдеры, темы, цвета. Никаких макетов — только реальные скриншоты.</p>
+    </div>
+    <div class="tabs-wrap rv">
+      <div class="tabs" role="tablist" aria-label="Вкладки настроек">
+        <button class="tab" type="button" role="tab" aria-selected="true" aria-controls="shots" data-tab="0" data-i18n="ui.tab1">Общие</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="shots" data-tab="1" data-i18n="ui.tab2">Снег</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="shots" data-tab="2" data-i18n="ui.tab3">Украшения</button>
+      </div>
+    </div>
+    <div class="shots-wrap glowwrap rv">
+      <div class="shot-frame big" id="shots" role="tabpanel">
+        <img class="shot" src="screenshots/settings-general.png" width="972" height="724" alt="Desktop Snow — вкладка «Общие»" data-idx="0" decoding="async">
+        <img class="shot" src="screenshots/settings-snow.png" width="977" height="725" alt="Desktop Snow — вкладка «Снег»" data-idx="1" hidden decoding="async">
+        <img class="shot" src="screenshots/settings-decor.png" width="983" height="718" alt="Desktop Snow — вкладка «Украшения»" data-idx="2" hidden decoding="async">
+      </div>
+    </div>
+    <p class="ui-caption" id="uiCaption" data-i18n="ui.c1">Запуск, хоткеи, язык</p>
+  </section>
+
+  <section class="cta container">
+    <div class="cta-card glowwrap rv">
+      <h2 class="h2" data-i18n="cta.title">Готов к&nbsp;Новому&nbsp;году?</h2>
+      <p data-i18n="cta.text">Скачай, распакуй, запусти DesktopSnow.exe — снег пойдёт через секунду.</p>
+      <span class="magnet-wrap">
+        <a class="btn btn-primary magnet" href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="cta.btn">Скачать Desktop Snow</a>
+      </span>
+      <p class="techline" data-i18n="cta.note">Портативно · Без установки · Windows 10/11</p>
+    </div>
+  </section>
+
 </main>
 
-<footer class="foot">
-  <a class="brand mini" href="#top">
-    <svg class="flake" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 2v20M4 7l16 10M20 7L4 17M12 2l-2.5 3M12 2l2.5 3M12 22l-2.5-3M12 22l2.5-3M4 7l3.8.8M4 7l.8 3.8M20 17l-3.8-.8M20 17l-.8-3.8M20 7l-3.8.8M20 7l-.8 3.8M4 17l3.8-.8M4 17l.8-3.8" stroke="#38BDF8" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
-    <span>Desktop&nbsp;Snow</span>
-  </a>
-  <div class="foot-links">
-    <a href="https://github.com/pidarasiki2015/desktop-weather" target="_blank" rel="noopener" data-i18n="foot.repo">GitHub</a>
-    <a href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="foot.rel">Релизы</a>
-  </div>
-  <div class="langs" role="group" aria-label="Language">
-    <button class="lang on" data-lang="ru">RU</button><button class="lang" data-lang="ua">UA</button><button class="lang" data-lang="en">EN</button>
+<footer class="footer">
+  <div class="footer-in container">
+    <a class="logo small" href="#top" aria-label="Desktop Snow">
+      <svg class="logo-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Desktop Snow</span>
+    </a>
+    <span class="footer-copy">© 2026 Desktop Snow</span>
+    <nav class="footer-links" aria-label="Ссылки">
+      <a href="https://github.com/pidarasiki2015/desktop-weather" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/pidarasiki2015/desktop-weather/releases" target="_blank" rel="noopener" data-i18n="footer.releases">Релизы</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Язык / Language">
+      <button class="lang-btn" type="button" data-setlang="ru" aria-pressed="true">RU</button>
+      <button class="lang-btn" type="button" data-setlang="ua" aria-pressed="false">UA</button>
+      <button class="lang-btn" type="button" data-setlang="en" aria-pressed="false">EN</button>
+    </div>
   </div>
 </footer>
 
-<script src="app.js?v=14"></script>
+<script src="app.js?v=1" defer></script>
 </body>
 </html>
