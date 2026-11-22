@@ -331,8 +331,14 @@
     if (driftH.length !== DRIFT_COLS) driftH = new Float32Array(DRIFT_COLS);
   }
 
-  function resizeSnow() {
+  var lastW = 0, lastH = 0;
+
+  /* resize НИКОГДА не пересоздаёт частицы: сохраняем существующие,
+     пересчитываем координаты. Иначе на мобиле скролл (URL-bar wobble)
+     перезапускал снегопад и снежинки телепортировались. */
+  function resizeSnowKeep() {
     if (!canvas || !ctx) return;
+    var oldW = W || window.innerWidth;
     DPR = Math.min(window.devicePixelRatio || 1, 2);
     W = window.innerWidth;
     H = window.innerHeight;
@@ -340,9 +346,13 @@
     canvas.height = Math.round(H * DPR);
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     var target = W < 640 ? 70 : 140;
-    var next = [];
-    for (var i = 0; i < target; i++) next.push(newFlake(true));
-    flakes = next;
+    for (var i = 0; i < flakes.length; i++) {
+      var p = flakes[i];
+      p.x = p.x / Math.max(1, oldW) * W;
+      if (p.y > H + 12) p.y = Math.random() * Math.max(1, H);
+    }
+    while (flakes.length > target) flakes.pop();
+    while (flakes.length < target) flakes.push(newFlake(true));
     resizeDrift();
   }
 
@@ -779,29 +789,38 @@
         shx = Math.max(-90, Math.min(90, dx));
         shy = Math.max(-46, Math.min(46, dy * 0.6));
         var dtm = Math.max(1, t - dg.lt);
-        svx = Math.max(-2500, Math.min(2500, (e.clientX - dg.lx) / dtm * 1000));
-        svy = Math.max(-1500, Math.min(1500, (e.clientY - dg.ly) / dtm * 1000));
+        /* сглаживание скорости: одиночный микро-джиттер не считается рывком */
+        var inst = (e.clientX - dg.lx) / dtm * 1000;
+        svx = svx * 0.6 + Math.max(-2500, Math.min(2500, inst)) * 0.4;
+        var instY = (e.clientY - dg.ly) / dtm * 1000;
+        svy = svy * 0.6 + Math.max(-1500, Math.min(1500, instY)) * 0.4;
         dg.lx = e.clientX;
         dg.ly = e.clientY;
         dg.lt = t;
-        /* резкая тряска на ходу — разлёт */
-        if (Math.abs(svx) > 1500 && shakeAge > 0.9) {
+        /* рывок для разлёта: скорость окна за весь драг (устойчиво к джиттеру) */
+        var wvx = dx / Math.max(16, t - dg.t0) * 1000;
+        if (dg.moved && Math.abs(dx) > 18 && Math.abs(wvx) > 900 && shakeAge > 0.9) {
           shakeWindow(22);
           burstDrift();
         }
       });
-      function endDrag() {
+      function endDrag(canceled) {
         if (!dg.active) return;
         dg.active = false;
         stage.classList.remove('dragging');
-        var wasClick = !dg.moved && (performance.now() - dg.t0) < 420;
+        /* pointercancel = скролл/жест, а не тап: никакого shake/взрыва */
+        var wasClick = !canceled && !dg.moved && (performance.now() - dg.t0) < 420;
         if (wasClick) {
           shakeWindow(18);
           burstDrift();
         }
+        if (canceled) {
+          svx = 0;
+          svy = 0;
+        }
       }
-      stage.addEventListener('pointerup', endDrag);
-      stage.addEventListener('pointercancel', endDrag);
+      stage.addEventListener('pointerup', function () { endDrag(false); });
+      stage.addEventListener('pointercancel', function () { endDrag(true); });
       stage.addEventListener('click', function (e) { e.preventDefault(); });
     }
 
@@ -827,12 +846,25 @@
 
     // snow boot
     if (canvas && ctx && !reduceMotion) {
-      resizeSnow();
-      window.addEventListener('resize', function () {
-        if (raf) { /* loop alive: just resize */ }
-        var rf = requestAnimationFrame(function () { resizeSnow(); });
-        void rf;
-      }, { passive: true });
+      resizeSnowKeep();
+      lastW = W;
+      lastH = H;
+      var rsTf = 0;
+      function onViewportChange() {
+        var nw = window.innerWidth;
+        var nh = window.innerHeight;
+        /* мобильный URL-bar: высота гуляет на десятки px при скролле — игнорируем */
+        if (nw === lastW && Math.abs(nh - lastH) < 140) return;
+        lastW = nw;
+        lastH = nh;
+        if (rsTf) return;
+        rsTf = requestAnimationFrame(function () {
+          rsTf = 0;
+          resizeSnowKeep();
+        });
+      }
+      window.addEventListener('resize', onViewportChange, { passive: true });
+      window.addEventListener('orientationchange', onViewportChange, { passive: true });
       raf = requestAnimationFrame(loop);
       document.addEventListener('visibilitychange', function () {
         if (document.hidden) {
@@ -880,6 +912,9 @@
       stageTransform: function () { var st = $('#stage'); return st ? st.style.transform : ''; },
       pump: pump,
       flakes: function () { return flakes.length; },
+      flakesSample: function () {
+        return flakes.slice(0, 4).map(function (p) { return [Math.round(p.x), Math.round(p.y)]; });
+      },
       lang: function () { return lang; },
       color: function () { return snowColor; },
       tab: function () { return currentTab; },
