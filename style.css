@@ -282,13 +282,20 @@ h3 {
 /* ---------- Showcase & screenshots ---------- */
 .glowwrap { position: relative; }
 .glowwrap::before {
-  content: ""; position: absolute; inset: -8% -10%; z-index: 0; pointer-events: none;
+  content: ""; position: absolute; inset: -10% -12%; z-index: 0; pointer-events: none;
+  /* Каждая волна гаснет в transparent задолго до границ псевдоэлемента:
+     край блока нигде не пересекает ещё видимый градиент → нет прямых срезов */
   background:
-    radial-gradient(46% 42% at 22% 12%, var(--glow-ice), transparent 70%),
-    radial-gradient(40% 38% at 82% 88%, var(--glow-red), transparent 70%);
-  opacity: 1;
+    radial-gradient(ellipse 42% 34% at 30% 26%, var(--glow-ice), transparent 58%),
+    radial-gradient(ellipse 38% 30% at 74% 74%, var(--glow-red), transparent 58%);
 }
 .showcase { max-width: 1080px; margin: 56px auto 0; }
+.stage {
+  position: relative; touch-action: pan-y; cursor: grab;
+  user-select: none; -webkit-user-select: none;
+  will-change: transform;
+}
+.stage.dragging { cursor: grabbing; }
 .shot-frame {
   margin: 0;
   position: relative; z-index: 2; overflow: hidden;
@@ -296,15 +303,20 @@ h3 {
   background: var(--surface-2);
   box-shadow: var(--rim-top), 0 48px 140px rgba(0, 0, 0, 0.65), 0 18px 48px rgba(0, 0, 0, 0.5);
 }
-.shot-frame img { width: 100%; height: auto; }
+.shot-frame img { width: 100%; height: auto; -webkit-user-drag: none; user-select: none; }
 .drift {
   position: absolute; left: 0; right: 0; top: -28px; height: 36px; width: 100%;
   z-index: 3; pointer-events: none;
 }
 .shot-drift-hint {
-  margin: 14px 0 0; text-align: center; position: relative; z-index: 2;
+  margin: 0; text-align: center; position: relative; z-index: 2;
   font: 500 12px/1.5 'JetBrains Mono', monospace; color: var(--text-2);
 }
+.showcase-ctl {
+  position: relative; z-index: 2; display: flex; align-items: center;
+  justify-content: center; gap: 16px; margin-top: 14px; flex-wrap: wrap;
+}
+.btn-shake { min-height: 40px; padding: 10px 18px; font-size: 13px; }
 .shots-wrap { position: relative; max-width: 960px; margin: 0 auto; }
 .shot-frame.big { border-radius: 16px; }
 .shot[hidden] { display: none; }
@@ -425,7 +437,7 @@ h3 {
   border: 1px solid var(--border); border-radius: 24px;
   padding: clamp(40px, 7vw, 88px) clamp(20px, 5vw, 64px);
   background:
-    radial-gradient(120% 140% at 50% 0%, rgba(var(--ice-rgb), 0.08), transparent 60%),
+    radial-gradient(90% 130% at 50% -25%, rgba(var(--ice-rgb), 0.10), transparent 62%),
     rgba(var(--surface-rgb), 0.55);
   box-shadow: var(--rim-top), 0 40px 120px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(14px);
@@ -476,6 +488,7 @@ h3 {
   .bigzero span { font-size: 56px; }
   .footer-in { justify-content: center; text-align: center; gap: 12px; }
   .snowctl-hint { width: 100%; margin-left: 0; }
+  .showcase-ctl { flex-direction: column; gap: 10px; }
   .sec-head { margin-bottom: 30px; }
 }
 @media (max-width: 379px) {

@@ -29,7 +29,8 @@
       'hero.tech': 'Бесплатно • C++ & Direct2D • < 1\u00A0МБ • 30–144 FPS • Без\u00A0установки',
       'hero.snowlabel': 'Цвет снега',
       'hero.hint': 'Ctrl+Alt+S — снег вкл/выкл',
-      'hero.driftHint': 'Снег оседает на\u00A0кромке. Кликни или потряси витрину, чтобы стряхнуть.',
+      'hero.driftHint': 'Кликни, потяни или нажми «Потрясти» — сугроб разлетится.',
+      'hero.shake': 'Потрясти',
       'feat.eyebrow': 'Возможности',
       'feat.title': 'Каждая деталь — про\u00A0зиму',
       'feat.dwm.e': 'DWM',
@@ -82,7 +83,8 @@
       'hero.tech': 'Безкоштовно • C++ & Direct2D • < 1\u00A0МБ • 30–144 FPS • Без\u00A0встановлення',
       'hero.snowlabel': 'Колір снігу',
       'hero.hint': 'Ctrl+Alt+S — сніг увімк/вимк',
-      'hero.driftHint': 'Сніг осідає на\u00A0краю. Клікни або потруси вітрину, щоб струсити.',
+      'hero.driftHint': 'Клікни, потягни або натисни «Потрусити» — замет розлетиться.',
+      'hero.shake': 'Потрусити',
       'feat.eyebrow': 'Можливості',
       'feat.title': 'Кожна деталь — про\u00A0зиму',
       'feat.dwm.e': 'DWM',
@@ -135,7 +137,8 @@
       'hero.tech': 'Free • C++ & Direct2D • < 1\u00A0MB • 30–144 FPS • No\u00A0install',
       'hero.snowlabel': 'Snow color',
       'hero.hint': 'Ctrl+Alt+S — toggle snow',
-      'hero.driftHint': 'Snow settles on\u00A0the\u00A0rim. Click or shake the showcase to brush it\u00A0off.',
+      'hero.driftHint': 'Click, drag or hit \u201CShake\u201D — the drift bursts apart.',
+      'hero.shake': 'Shake',
       'feat.eyebrow': 'Features',
       'feat.title': 'Every detail is\u00A0about winter',
       'feat.dwm.e': 'DWM',
@@ -367,51 +370,146 @@
     var mx = 0;
     for (var j = 0; j < DRIFT_COLS; j++) mx = Math.max(mx, driftH[j]);
     driftMaxRecent = mx;
-    var baseY = h - 3;
+
+    /* базовая линия = верхняя кромка окна (canvas лежит на 8px ниже кромки);
+       у скруглённых углов база огибает дугу radius 16, поэтому снег обтекает шапку */
+    var baseY = h - 8;
     var cw = w / DRIFT_COLS;
-    var pts = [];
-    for (var k = 0; k < DRIFT_COLS; k++) pts.push({ x: (k + 0.5) * cw, y: baseY - driftH[k] });
+    var R = 16;
+    var EDGE = 12;
+    var pts = [], hgt = [];
+    for (var k = 0; k < DRIFT_COLS; k++) {
+      var xc = (k + 0.5) * cw;
+      var arc = 0;
+      if (xc < R) {
+        var dxl = R - xc;
+        arc = R - Math.sqrt(Math.max(0, R * R - dxl * dxl));
+      } else if (xc > w - R) {
+        var dxr = xc - (w - R);
+        arc = R - Math.sqrt(Math.max(0, R * R - dxr * dxr));
+      }
+      var s = 1;
+      if (xc < EDGE) s = xc / EDGE;
+      else if (xc > w - EDGE) s = (w - xc) / EDGE;
+      s = Math.max(0, Math.min(1, s));
+      s = s * s * s; /* кубическое затухание: у самых углов высота строго 0 */
+      var hv = driftH[k] * s;
+      hgt.push(hv);
+      pts.push({ x: xc, yTop: baseY + arc - hv, yBase: baseY + arc });
+    }
 
     function driftPath(dy) {
       dctx.beginPath();
-      dctx.moveTo(0, h);
-      dctx.lineTo(pts[0].x, pts[0].y + dy);
+      dctx.moveTo(pts[0].x, pts[0].yTop + dy);
       for (var n = 1; n < pts.length; n++) {
         var p0 = pts[n - 1], p1 = pts[n];
-        dctx.quadraticCurveTo(p0.x, p0.y + dy, (p0.x + p1.x) / 2, (p0.y + p1.y) / 2 + dy);
+        dctx.quadraticCurveTo(p0.x, p0.yTop + dy, (p0.x + p1.x) / 2, (p0.yTop + p1.yTop) / 2 + dy);
       }
-      dctx.lineTo(w, h);
+      dctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].yBase + dy);
+      for (var n3 = pts.length - 1; n3 >= 0; n3--) dctx.lineTo(pts[n3].x, pts[n3].yBase + dy);
       dctx.closePath();
     }
 
-    /* contact shade on the frame rim */
+    /* контактная тень на кромке */
     driftPath(2);
     dctx.fillStyle = hexA(cssVar('--bg') || snowShadow, 0.4);
     dctx.fill();
 
-    /* drift body */
+    /* тело сугроба: между гребнем и кромкой, углы огибаются по дуге */
     driftPath(0);
-    var g = dctx.createLinearGradient(0, baseY - 18, 0, h);
+    var g = dctx.createLinearGradient(0, baseY - 18, 0, baseY + R);
     g.addColorStop(0, hexA(snowColor, 0.97));
     g.addColorStop(1, hexA(snowShadow, 0.6));
     dctx.fillStyle = g;
     dctx.fill();
 
-    /* top highlight */
-    dctx.beginPath();
-    dctx.moveTo(pts[0].x, pts[0].y);
-    for (var n2 = 1; n2 < pts.length; n2++) {
-      var q0 = pts[n2 - 1], q1 = pts[n2];
-      dctx.quadraticCurveTo(q0.x, q0.y, (q0.x + q1.x) / 2, (q0.y + q1.y) / 2);
+    /* блик только по реальному гребню (без линий по краевым нулям) */
+    var i0 = -1, i1 = -1;
+    for (var m = 0; m < hgt.length; m++) {
+      if (hgt[m] > 0.5) { if (i0 < 0) i0 = m; i1 = m; }
     }
-    dctx.strokeStyle = hexA(cssVar('--white') || snowColor, 0.55);
-    dctx.lineWidth = 1;
-    dctx.stroke();
+    if (i0 >= 0) {
+      dctx.beginPath();
+      dctx.moveTo(pts[i0].x, pts[i0].yTop);
+      for (var n2 = i0 + 1; n2 <= i1; n2++) {
+        var q0 = pts[n2 - 1], q1 = pts[n2];
+        dctx.quadraticCurveTo(q0.x, q0.yTop, (q0.x + q1.x) / 2, (q0.yTop + q1.yTop) / 2);
+      }
+      dctx.strokeStyle = hexA(cssVar('--white') || snowColor, 0.55);
+      dctx.lineWidth = 1;
+      dctx.stroke();
+    }
   }
 
   var simT = 0;
+  var bursts = [];
+  var dragState = { active: false, moved: false, x0: 0, y0: 0, lx: 0, ly: 0, lt: 0, t0: 0 };
+  var shx = 0, shy = 0, svx = 0, svy = 0;
+  var shakeAge = 99, shakeStrength = 0;
+  var stageEl = null;
+  function stageRef() { return stageEl || (stageEl = $('#stage')); }
+
+  function applyStage() {
+    var st = stageRef();
+    if (!st) return;
+    var sox = 0, sor = 0;
+    if (shakeAge < 1.2) {
+      var decay = Math.exp(-shakeAge * 4.0);
+      sox = Math.sin(shakeAge * 30) * shakeStrength * decay;
+      sor = Math.sin(shakeAge * 26 + 0.7) * shakeStrength * 0.09 * decay;
+    }
+    var tx = shx + sox;
+    var deg = shx * 0.02 + sor;
+    if (Math.abs(tx) > 0.02 || Math.abs(shy) > 0.02 || Math.abs(deg) > 0.002) {
+      st.style.transform = 'translate3d(' + tx.toFixed(2) + 'px,' + shy.toFixed(2) + 'px,0) rotate(' + deg.toFixed(3) + 'deg)';
+    } else if (st.style.transform) {
+      st.style.transform = '';
+    }
+  }
+
+  /* пружинный возврат витрины после драга + затухающая тряска окна */
+  function updateStagePhysics(dt) {
+    var s = Math.min(dt / 1000, 0.033);
+    if (!dragState.active) {
+      svx += (-90 * shx - 12 * svx) * s;
+      svy += (-90 * shy - 12 * svy) * s;
+      shx += svx * s;
+      shy += svy * s;
+      if (Math.abs(shx) < 0.05 && Math.abs(svx) < 0.5) { shx = 0; svx = 0; }
+      if (Math.abs(shy) < 0.05 && Math.abs(svy) < 0.5) { shy = 0; svy = 0; }
+    }
+    if (shakeAge < 2) shakeAge += dt / 1000;
+    applyStage();
+  }
+
+  function updateBursts(dt) {
+    for (var i = bursts.length - 1; i >= 0; i--) {
+      var b = bursts[i];
+      b.vy += 900 * dt / 1000;          /* гравитация */
+      b.x += b.vx * dt / 1000;
+      b.y += b.vy * dt / 1000;
+      b.life -= dt / 1000;
+      if (b.y > H + 24 || b.life <= 0) bursts.splice(i, 1);
+    }
+  }
+
+  function drawBursts() {
+    if (!bursts.length) return;
+    ctx.fillStyle = snowColor;
+    for (var i = 0; i < bursts.length; i++) {
+      var b = bursts[i];
+      ctx.globalAlpha = Math.max(0, Math.min(1, b.life));
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
   function step(dt, t) {
     ctx.clearRect(0, 0, W, H);
+    updateStagePhysics(dt);
+    updateBursts(dt);
     var frame = $('#heroFrame');
     var r = frame ? frame.getBoundingClientRect() : null;
     var visible = r && r.top > -r.height && r.top < H;
@@ -446,6 +544,7 @@
       }
       ctx.globalAlpha = 1;
     }
+    drawBursts();
     drawDrift(dt);
   }
 
@@ -609,20 +708,101 @@
       });
     });
 
-    // showcase shake / click
-    var showcase = $('#showcase');
-    if (showcase) {
-      var sx = null, sy = null, shaken = false;
-      showcase.addEventListener('click', function () { resetDrift(); });
-      showcase.addEventListener('pointerdown', function (e) { sx = e.clientX; sy = e.clientY; shaken = false; });
-      showcase.addEventListener('pointermove', function (e) {
-        if (sx == null || shaken) return;
-        if (Math.abs(e.clientX - sx) > 60 || Math.abs(e.clientY - sy) > 60) {
-          shaken = true;
-          resetDrift();
+    // showcase: настоящий драг, тряска, физический разлёт сугроба
+    var stage = $('#stage');
+    var shakeBtn = $('#shakeBtn');
+
+    function shakeWindow(strength) {
+      shakeAge = 0;
+      shakeStrength = strength || 18;
+    }
+
+    function burstDrift() {
+      if (!driftH) return 0;
+      var frame = $('#heroFrame');
+      var sum = 0, mxv = 0;
+      for (var i = 0; i < DRIFT_COLS; i++) {
+        sum += driftH[i];
+        if (driftH[i] > mxv) mxv = driftH[i];
+      }
+      var r = frame ? frame.getBoundingClientRect() : null;
+      var n = 0;
+      if (r && sum > 1.2) {
+        n = Math.max(25, Math.min(40, 25 + Math.round(mxv * 1.1)));
+        for (var k = 0; k < n; k++) {
+          var col = Math.floor(Math.random() * DRIFT_COLS), tries = 0;
+          while (driftH[col] < 0.3 && tries++ < 10) col = Math.floor(Math.random() * DRIFT_COLS);
+          var x = r.left + (col + 0.5) / DRIFT_COLS * r.width;
+          var y = r.top - Math.min(driftH[col], 12) - 2;
+          var side = x < r.left + r.width / 2 ? -1 : 1;
+          bursts.push({
+            x: x, y: y,
+            vx: side * (60 + Math.random() * 190) + (Math.random() - 0.5) * 90,
+            vy: -(40 + Math.random() * 120),
+            r: 1.2 + Math.random() * 2.2,
+            life: 1.6 + Math.random() * 0.9
+          });
+        }
+      }
+      driftH.fill(0);
+      driftMaxRecent = 0;
+      return n;
+    }
+
+    if (shakeBtn) {
+      shakeBtn.addEventListener('click', function () {
+        shakeWindow(18);
+        burstDrift();
+      });
+    }
+
+    if (stage) {
+      var dg = dragState;
+      stage.addEventListener('pointerdown', function (e) {
+        if (e.button != null && e.button !== 0) return;
+        dg.active = true;
+        dg.moved = false;
+        dg.x0 = dg.lx = e.clientX;
+        dg.y0 = dg.ly = e.clientY;
+        dg.lt = dg.t0 = performance.now();
+        stage.classList.add('dragging');
+        if (stage.setPointerCapture) {
+          try { stage.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointers */ }
         }
       });
-      showcase.addEventListener('pointerup', function () { sx = null; });
+      stage.addEventListener('pointermove', function (e) {
+        if (!dg.active) return;
+        var t = performance.now();
+        var dx = e.clientX - dg.x0;
+        var dy = e.clientY - dg.y0;
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) dg.moved = true;
+        shx = Math.max(-90, Math.min(90, dx));
+        shy = Math.max(-46, Math.min(46, dy * 0.6));
+        var dtm = Math.max(1, t - dg.lt);
+        svx = Math.max(-2500, Math.min(2500, (e.clientX - dg.lx) / dtm * 1000));
+        svy = Math.max(-1500, Math.min(1500, (e.clientY - dg.ly) / dtm * 1000));
+        dg.lx = e.clientX;
+        dg.ly = e.clientY;
+        dg.lt = t;
+        /* резкая тряска на ходу — разлёт */
+        if (Math.abs(svx) > 1500 && shakeAge > 0.9) {
+          shakeWindow(22);
+          burstDrift();
+        }
+      });
+      function endDrag() {
+        if (!dg.active) return;
+        dg.active = false;
+        stage.classList.remove('dragging');
+        var wasClick = !dg.moved && (performance.now() - dg.t0) < 420;
+        if (wasClick) {
+          shakeWindow(18);
+          burstDrift();
+        }
+      }
+      stage.addEventListener('pointerup', endDrag);
+      stage.addEventListener('pointercancel', endDrag);
+      stage.addEventListener('click', function (e) { e.preventDefault(); });
     }
 
     // hotkey Ctrl+Alt+S (same as the app)
@@ -693,6 +873,11 @@
         return s;
       },
       resetDrift: resetDrift,
+      shake: shakeWindow,
+      burst: burstDrift,
+      bursts: function () { return bursts.length; },
+      stageX: function () { return shx; },
+      stageTransform: function () { var st = $('#stage'); return st ? st.style.transform : ''; },
       pump: pump,
       flakes: function () { return flakes.length; },
       lang: function () { return lang; },

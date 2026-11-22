@@ -68,12 +68,17 @@
       <span class="snowctl-hint" data-i18n="hero.hint">Ctrl+Alt+S — снег вкл/выкл</span>
     </div>
 
-    <div class="showcase glowwrap rv" id="showcase" title="Кликни, чтобы стряхнуть снег">
-      <canvas class="drift" id="drift" aria-hidden="true"></canvas>
-      <figure class="shot-frame" id="heroFrame">
-        <img src="screenshots/settings-snow.png" width="977" height="725" alt="Desktop Snow — окно настроек, вкладка «Снег»" decoding="async">
-      </figure>
-      <p class="shot-drift-hint" data-i18n="hero.driftHint">Снег оседает на&nbsp;кромке. Кликни или потряси витрину, чтобы стряхнуть.</p>
+    <div class="showcase glowwrap rv" id="showcase">
+      <div class="stage" id="stage">
+        <canvas class="drift" id="drift" aria-hidden="true"></canvas>
+        <figure class="shot-frame" id="heroFrame">
+          <img src="screenshots/settings-snow.png" width="977" height="725" alt="Desktop Snow — окно настроек, вкладка «Снег»" decoding="async" draggable="false">
+        </figure>
+      </div>
+      <div class="showcase-ctl">
+        <p class="shot-drift-hint" data-i18n="hero.driftHint">Кликни, потяни или нажми «Потрясти» — сугроб разлетится.</p>
+        <button class="btn btn-ghost btn-shake" id="shakeBtn" type="button" data-i18n="hero.shake">Потрясти</button>
+      </div>
     </div>
   </section>
 
